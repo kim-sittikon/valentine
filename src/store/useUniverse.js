@@ -1,11 +1,17 @@
 import { create } from 'zustand';
+import { SCENES, getSceneFromProgress, getLocalProgress } from '../config/sceneConfig';
 
 const useUniverse = create((set, get) => ({
     // ─── Scene State ───
     currentScene: 'void',
+    prevScene: 'void',
+    localProgress: 0,
+    sceneEnergy: 0.2,
+    sceneIndex: 0,
 
     // ─── Animation Progress ───
     scrollProgress: 0,
+    scrollVelocity: 0,
     morphProgress: 0,
     warpStretch: 0,
     heartBeat: 0,
@@ -34,21 +40,23 @@ const useUniverse = create((set, get) => ({
 
     // ─── Actions ───
     setScrollProgress: (p) => {
-        const scene =
-            p < 0.10 ? 'void' :
-                p < 0.20 ? 'birth' :
-                    p < 0.45 ? 'memory' :
-                        p < 0.55 ? 'chaos' :
-                            p < 0.75 ? 'gravity' : 'love';
+        const prev = get().currentScene;
+        const { scene, index } = getSceneFromProgress(p, prev);
+        const local = getLocalProgress(p, scene);
 
         set({
             scrollProgress: p,
-            currentScene: scene,
-            mouseInteraction: scene === 'chaos',
+            currentScene: scene.name,
+            prevScene: prev,
+            localProgress: local,
+            sceneEnergy: scene.energy,
+            sceneIndex: index,
+            mouseInteraction: scene.name === 'chaos',
             colorPhase: p * 5,
         });
     },
 
+    setScrollVelocity: (v) => set({ scrollVelocity: v }),
     setMorphProgress: (v) => set({ morphProgress: v }),
     setWarpStretch: (v) => set({ warpStretch: v }),
     setHeartBeat: (v) => set({ heartBeat: v }),
