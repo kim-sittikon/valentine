@@ -13,9 +13,9 @@ void main() {
   if (d > 0.5) discard;
 
   // Core (bright center) + soft glow (outer)
-  float core = smoothstep(0.5, 0.05, d);
-  float glow = smoothstep(0.5, 0.0, d) * 0.3;
-  float alpha = (core + glow) * vAlpha;
+  float core = smoothstep(0.5, 0.12, d);
+  float glow = smoothstep(0.5, 0.0, d) * 0.15;
+  float alpha = (core + glow) * vAlpha * 0.7;
 
   // Slight color tint at core (reduced to prevent blowout)
   vec3 color = vColor + core * 0.08;

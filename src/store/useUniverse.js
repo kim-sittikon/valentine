@@ -31,6 +31,9 @@ const useUniverse = create((set, get) => ({
     quality: 'high',
     fps: 60,
 
+    // ─── Gate Lock ───
+    gateUnlocked: false,
+
 
     // ─── Actions ───
     setScrollProgress: (p) => {
@@ -77,6 +80,7 @@ const useUniverse = create((set, get) => ({
     toggleDebug: () => set((s) => ({ debugMode: !s.debugMode })),
     setQuality: (q) => set({ quality: q }),
     setFps: (f) => set({ fps: f }),
+    setGateUnlocked: (v) => set({ gateUnlocked: v }),
 }));
 
 export default useUniverse;

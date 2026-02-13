@@ -15,11 +15,11 @@ export const SCENES = [
         name: 'void',
         range: [0, 0.10],
         camera: { z: 100, breathing: 0.3, shake: 0, orbitSpeed: 0, minZ: 90, maxZ: 110 },
-        bloom: 0.08,
+        bloom: 0.06,
         postfx: {
             dof: false, ca: 0, grain: 0.02,
             fogDensity: 0.0, fogColor: [0.02, 0.02, 0.08],           // no fog in void — clean stars
-            bloomThreshold: 0.6,
+            bloomThreshold: 0.9,
             colorTint: [0.0, 0.0, 0.04],                           // slight blue
         },
         energy: 0.2,
@@ -32,11 +32,11 @@ export const SCENES = [
         name: 'birth',
         range: [0.10, 0.20],
         camera: { z: 60, breathing: 0.5, shake: 0, orbitSpeed: 0, minZ: 50, maxZ: 110 },
-        bloom: 0.12,
+        bloom: 0.08,
         postfx: {
             dof: false, ca: 0, grain: 0.02,
             fogDensity: 0.014, fogColor: [0.04, 0.02, 0.09],       // navy-purple
-            bloomThreshold: 0.55,
+            bloomThreshold: 0.8,
             colorTint: [0.01, 0.0, 0.03],                          // slight purple
         },
         energy: 0.4,
@@ -109,7 +109,7 @@ export const SCENES = [
         },
         energy: 0.5,
         emotion: 'intimate',
-        title: 'Happy Valentine\'s Day\nรักนะ ที่สุดในจักรวาล 💖',
+        title: '',
         easing: 'power2.out',
         event: 'heart_morph',
     },

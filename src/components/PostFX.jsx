@@ -51,7 +51,7 @@ export default function PostFX() {
             }
         }
         const targetBloom = (config.bloom ?? 0.1) + energyBoost + velocityBoost + audioBloomBoost;
-        bloomIntRef.current = lerp(bloomIntRef.current, Math.min(targetBloom, 0.5), speed);
+        bloomIntRef.current = lerp(bloomIntRef.current, Math.min(targetBloom, 0.35), speed);
 
         const targetThresh = config.postfx.bloomThreshold ?? 0.5;
         bloomThreshRef.current = lerp(bloomThreshRef.current, targetThresh, speed);
@@ -119,7 +119,7 @@ export default function PostFX() {
             />
             <Vignette
                 offset={0.3}
-                darkness={0.35}
+                darkness={0.55}
                 blendFunction={BlendFunction.NORMAL}
             />
         </EffectComposer>

@@ -1,9 +1,12 @@
 import React, { useEffect } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import GateLock from './components/GateLock';
 import Canvas3D from './components/Canvas3D';
 import BackgroundVideo from './components/BackgroundVideo';
 import FloatingMemories from './components/FloatingMemories';
+import LoveLetterOverlay from './components/LoveLetterOverlay';
+import WelcomeOverlay from './components/WelcomeOverlay';
 import Overlay from './components/Overlay';
 import useScrollTimeline from './hooks/useScrollTimeline';
 import useAudio from './hooks/useAudio';
@@ -46,6 +49,7 @@ class ErrorBoundary extends React.Component {
 }
 
 export default function App() {
+    const gateUnlocked = useUniverse((s) => s.gateUnlocked);
     useScrollTimeline();
     const { initAudio } = useAudio();
 
@@ -61,7 +65,6 @@ export default function App() {
             // Key 0 → scroll to top
             if (e.key === '0') {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
-                // Let GSAP catch up after scroll completes
                 requestAnimationFrame(() => ScrollTrigger.update());
                 console.log('[Galaxy] ⚡ Dev jump → top');
                 return;
@@ -75,14 +78,11 @@ export default function App() {
                 const scrollContainer = document.getElementById('scroll-container');
                 if (!scrollContainer) return;
 
-                // Calculate target scroll position
                 const scrollHeight = scrollContainer.scrollHeight - window.innerHeight;
                 const targetY = midpoint * scrollHeight;
 
                 window.scrollTo({ top: targetY, behavior: 'smooth' });
 
-                // Sync ScrollTrigger after smooth scroll settles
-                // Use a small delay so the scroll animation can start
                 setTimeout(() => {
                     ScrollTrigger.update();
                 }, 50);
@@ -98,6 +98,16 @@ export default function App() {
         return () => window.removeEventListener('keydown', handleKey);
     }, []);
 
+    // ─── Gate Lock Screen ───
+    if (!gateUnlocked) {
+        return (
+            <ErrorBoundary>
+                <GateLock initAudio={initAudio} />
+            </ErrorBoundary>
+        );
+    }
+
+    // ─── Galaxy Experience ───
     return (
         <ErrorBoundary>
             {/* Cinematic background video (scroll 85-100%) */}
@@ -108,6 +118,12 @@ export default function App() {
 
             {/* Floating photo memories (HTML overlay, scroll 18-40%) */}
             <FloatingMemories />
+
+            {/* Welcome screen (HTML overlay, scroll 0-5%) */}
+            <WelcomeOverlay />
+
+            {/* Love Letter (HTML overlay, scroll 90-100%) */}
+            <LoveLetterOverlay />
 
             {/* HTML Overlay UI */}
             <Overlay initAudio={initAudio} />

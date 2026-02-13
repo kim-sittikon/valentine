@@ -169,7 +169,7 @@ void main() {
   }
 
   // ─── 9. Color morphing (3 states + chaos shift + heatmap) ───
-  vec3 starColor  = vec3(0.85, 0.85, 1.0);     // slightly blue white
+  vec3 starColor  = vec3(0.55, 0.50, 0.75);     // gentle purple-blue stars
   vec3 photoColor = aColor;                      // actual photo colors
   vec3 heartColor = vec3(1.0, 0.46, 0.55);      // heart pink
 
@@ -187,25 +187,25 @@ void main() {
 
   vColor = finalColor;
 
-  // ─── 10. Alpha: prevent additive blowout during morph ───
-  float morphAlpha = mix(1.0, 0.35, morphTotal);  // fade to 35% when morphed
+  // ─── 10. Alpha: prevent additive blowout ───
+  float morphAlpha = mix(0.5, 0.35, morphTotal);  // base 50%, 35% when morphed
   vAlpha = aLife * morphAlpha;
 
   // ─── 11. Project ───
   vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
   vFogDepth = -mvPosition.z;
 
-  float sizeScale = uPointScale * (300.0 / -mvPosition.z);
+  float sizeScale = uPointScale * (80.0 / -mvPosition.z);
   float sparkle = uAudioHigh * sin(uTime * 20.0 + aRandom.x * 100.0) * 0.5;
   gl_PointSize = aSize * sizeScale * (1.0 + uBeat * 0.15) * (1.0 + sparkle);
 
   // ─── 12. Morph-aware size ───
-  float morphSize = mix(1.0, 0.4, tA);   // stars → photo: shrink to 40%
-  morphSize = mix(morphSize, 0.45, tB);   // photo → heart: 45%
+  float morphSize = mix(1.0, 0.65, tA);   // stars → photo: shrink to 65% (clearer image)
+  morphSize = mix(morphSize, 0.5, tB);    // photo → heart: 50%
   gl_PointSize *= morphSize;
 
-  // Brightness-based size boost
-  gl_PointSize *= 1.0 + aBrightness * 0.4;
+  // Brightness-based size boost (subtle)
+  gl_PointSize *= 1.0 + aBrightness * 0.3;
 
   // ★ Interaction Size Pulse — only during unmorphed/chaos (fades with morph)
   float sizePulse = 1.0 + heat * 0.6 * (1.0 - morphTotal);

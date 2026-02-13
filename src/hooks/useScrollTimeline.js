@@ -65,94 +65,108 @@ export default function useScrollTimeline() {
     const prevTimeRef = useRef(performance.now());
     const prevSceneRef = useRef('void');
 
+    // Wait for gate to be unlocked before creating ScrollTrigger
+    const gateUnlocked = useUniverse((s) => s.gateUnlocked);
+
     useEffect(() => {
-        // ─── Main scroll → progress + velocity mapping ───
-        ScrollTrigger.create({
-            trigger: '#scroll-container',
-            start: 'top top',
-            end: 'bottom bottom',
-            scrub: 0.5,
-            onUpdate: (self) => {
-                const now = performance.now();
-                const progress = self.progress;
-                const deltaTime = (now - prevTimeRef.current) / 1000; // seconds
+        // Don't init until gate is unlocked & scroll-container exists
+        if (!gateUnlocked) return;
 
-                // ─── Normalized velocity (÷deltaTime + clamp ±2) ───
-                let velocity = 0;
-                if (deltaTime > 0.001) { // Guard against division by near-zero
-                    velocity = (progress - prevProgressRef.current) / deltaTime;
-                    velocity = clamp(velocity, -2, 2);
-                }
+        // Small delay to let React render the scroll-container div
+        const initTimer = setTimeout(() => {
+            ScrollTrigger.refresh();
 
-                // Update refs (before state, so no stale reads)
-                prevProgressRef.current = progress;
-                prevTimeRef.current = now;
-
-                // ─── Push to Zustand ───
-                const store = useUniverse.getState();
-                store.setScrollProgress(progress);
-                store.setScrollVelocity(velocity);
-
-                // ─── One-shot scene transition (ref-based, no double fire) ───
-                const currentScene = useUniverse.getState().currentScene;
-                if (currentScene !== prevSceneRef.current) {
-                    handleSceneTransition(
-                        prevSceneRef.current,
-                        currentScene,
-                        useUniverse.getState()
-                    );
-                    prevSceneRef.current = currentScene;
-                }
-            },
-        });
-
-        // ─── Per-scene GSAP timelines ───
-        const memoryConfig = getSceneByName('memory');
-        const gravityConfig = getSceneByName('gravity');
-        const loveConfig = getSceneByName('love');
-
-        const tl = gsap.timeline({
-            scrollTrigger: {
+            // ─── Main scroll → progress + velocity mapping ───
+            ScrollTrigger.create({
                 trigger: '#scroll-container',
                 start: 'top top',
                 end: 'bottom bottom',
-                scrub: 1,
-            },
-        });
+                scrub: 0.5,
+                onUpdate: (self) => {
+                    const now = performance.now();
+                    const progress = self.progress;
+                    const deltaTime = (now - prevTimeRef.current) / 1000; // seconds
 
-        // Phase A: stars → photo (memory scene: 20% → 45%)
-        const morphA = { phase: 0 };
-        tl.to(morphA, {
-            phase: 1,
-            duration: 0.25,
-            ease: memoryConfig?.easing || 'power2.inOut',
-            onUpdate: () => {
-                useUniverse.getState().setMorphPhase(morphA.phase);
-            },
-        }, memoryConfig?.range[0] || 0.2);
+                    // ─── Normalized velocity (÷deltaTime + clamp ±2) ───
+                    let velocity = 0;
+                    if (deltaTime > 0.001) { // Guard against division by near-zero
+                        velocity = (progress - prevProgressRef.current) / deltaTime;
+                        velocity = clamp(velocity, -2, 2);
+                    }
 
-        // Gravity: Warp stretch (55% → 75%)
-        const warpTarget = { warpStretch: 0 };
-        tl.to(warpTarget, {
-            warpStretch: 3,
-            duration: 0.2,
-            ease: gravityConfig?.easing || 'power3.in',
-            onUpdate: () => {
-                useUniverse.getState().setWarpStretch(warpTarget.warpStretch);
-            },
-        }, gravityConfig?.range[0] || 0.55);
+                    // Update refs (before state, so no stale reads)
+                    prevProgressRef.current = progress;
+                    prevTimeRef.current = now;
 
-        // Phase B: photo → heart (love scene: 75% → 100%)
-        const morphB = { phase: 1 };
-        tl.to(morphB, {
-            phase: 2,
-            duration: 0.25,
-            ease: loveConfig?.easing || 'power2.out',
-            onUpdate: () => {
-                useUniverse.getState().setMorphPhase(morphB.phase);
-            },
-        }, loveConfig?.range[0] || 0.75);
+                    // ─── Push to Zustand ───
+                    const store = useUniverse.getState();
+                    store.setScrollProgress(progress);
+                    store.setScrollVelocity(velocity);
 
-        return () => ScrollTrigger.getAll().forEach((t) => t.kill());
-    }, []);
+                    // ─── One-shot scene transition (ref-based, no double fire) ───
+                    const currentScene = useUniverse.getState().currentScene;
+                    if (currentScene !== prevSceneRef.current) {
+                        handleSceneTransition(
+                            prevSceneRef.current,
+                            currentScene,
+                            useUniverse.getState()
+                        );
+                        prevSceneRef.current = currentScene;
+                    }
+                },
+            });
+
+            // ─── Per-scene GSAP timelines ───
+            const memoryConfig = getSceneByName('memory');
+            const gravityConfig = getSceneByName('gravity');
+            const loveConfig = getSceneByName('love');
+
+            const tl = gsap.timeline({
+                scrollTrigger: {
+                    trigger: '#scroll-container',
+                    start: 'top top',
+                    end: 'bottom bottom',
+                    scrub: 1,
+                },
+            });
+
+            // Phase A: stars → photo (memory scene: 20% → 45%)
+            const morphA = { phase: 0 };
+            tl.to(morphA, {
+                phase: 1,
+                duration: 0.25,
+                ease: memoryConfig?.easing || 'power2.inOut',
+                onUpdate: () => {
+                    useUniverse.getState().setMorphPhase(morphA.phase);
+                },
+            }, memoryConfig?.range[0] || 0.2);
+
+            // Gravity: Warp stretch (55% → 75%)
+            const warpTarget = { warpStretch: 0 };
+            tl.to(warpTarget, {
+                warpStretch: 3,
+                duration: 0.2,
+                ease: gravityConfig?.easing || 'power3.in',
+                onUpdate: () => {
+                    useUniverse.getState().setWarpStretch(warpTarget.warpStretch);
+                },
+            }, gravityConfig?.range[0] || 0.55);
+
+            // Phase B: photo → heart (love scene: 75% → 100%)
+            const morphB = { phase: 1 };
+            tl.to(morphB, {
+                phase: 2,
+                duration: 0.25,
+                ease: loveConfig?.easing || 'power2.out',
+                onUpdate: () => {
+                    useUniverse.getState().setMorphPhase(morphB.phase);
+                },
+            }, loveConfig?.range[0] || 0.75);
+        }, 100);
+
+        return () => {
+            clearTimeout(initTimer);
+            ScrollTrigger.getAll().forEach((t) => t.kill());
+        };
+    }, [gateUnlocked]);
 }

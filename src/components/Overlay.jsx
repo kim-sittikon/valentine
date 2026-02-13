@@ -21,10 +21,14 @@ export default function Overlay({ initAudio }) {
         useUniverse.getState().toggleAudio();
     };
 
+    // Scenes where the title should be at the bottom (to avoid blocking morph)
+    const bottomScenes = ['memory', 'chaos', 'gravity'];
+    const isBottom = bottomScenes.includes(currentScene);
+
     return (
         <>
             {/* Scene Title */}
-            <div className="overlay">
+            <div className={`overlay ${isBottom ? 'overlay--bottom' : ''}`}>
                 <h1 className={`scene-title ${title ? 'visible' : ''}`}>
                     {title}
                 </h1>
@@ -35,15 +39,13 @@ export default function Overlay({ initAudio }) {
                 className="progress-bar"
                 style={{ width: `${scrollProgress * 100}%` }}
             />
-
-            {/* Audio Toggle */}
-            <button
-                className="audio-toggle"
-                onClick={handleAudioToggle}
-                title={audioEnabled ? 'เสียง: เปิด' : 'เสียง: ปิด'}
-            >
-                {audioEnabled ? '🔊' : '🔇'}
-            </button>
+            {/* Scroll Hint — visible only at the very start */}
+            {scrollProgress < 0.02 && (
+                <div className="scroll-hint">
+                    <span className="scroll-hint-text">ค่อยๆ เลื่อนลง เพื่อเริ่มการเดินทาง</span>
+                    <span className="scroll-hint-arrow">⌄</span>
+                </div>
+            )}
 
             {/* Debug Panel */}
             {debugMode && (

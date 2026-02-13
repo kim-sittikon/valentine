@@ -67,12 +67,16 @@ export default function BackgroundVideo() {
                 }
             }
 
-            // ── Opacity ──
+            // ── Opacity (fade in at 85%, fade out at 90%→94%) ──
             let opacity = 0;
-            if (scrollProgress >= VISIBLE_AT) {
-                const t = Math.min(1, (scrollProgress - VISIBLE_AT) / 0.10);
-                // Smooth ease-in-out
-                opacity = t * t * (3 - 2 * t) * 0.70; // mix-blend-mode: screen handles dark transparency
+            if (scrollProgress >= VISIBLE_AT && scrollProgress < 0.90) {
+                // Fade in: 85% → 90%
+                const t = Math.min(1, (scrollProgress - VISIBLE_AT) / 0.05);
+                opacity = t * t * (3 - 2 * t) * 0.70;
+            } else if (scrollProgress >= 0.90 && scrollProgress < 0.94) {
+                // Fade out: 90% → 94%
+                const t = 1 - Math.min(1, (scrollProgress - 0.90) / 0.04);
+                opacity = t * t * (3 - 2 * t) * 0.70;
             }
 
             container.style.opacity = opacity;

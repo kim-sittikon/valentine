@@ -27,7 +27,7 @@ function getOptimalParticleCount() {
         const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent) || ('ontouchstart' in window);
         const memory = navigator.deviceMemory || 4;
 
-        if (isMobile) return memory >= 6 ? 40000 : 25000;
+        if (isMobile) return memory >= 6 ? 30000 : 18000;
         if (isHighEnd) return 150000;
         if (isLowEnd) return 30000;
         return 80000;
@@ -78,7 +78,7 @@ export default function ParticleUniverse() {
             colors[i * 3 + 1] = 1.0;
             colors[i * 3 + 2] = 1.0;
 
-            sizes[i] = Math.random() * 2 + 0.5;
+            sizes[i] = Math.random() * 2.5 + 0.8;
             delays[i] = Math.random();
             lives[i] = 1.0;
             brightnesses[i] = 0.5 + Math.random() * 0.5;
@@ -99,7 +99,9 @@ export default function ParticleUniverse() {
 
     // ─── Async load couple photo → aTargetA ───
     useEffect(() => {
-        sampleImage('/photos/couple.webp', 350, PARTICLE_COUNT).then((result) => {
+        const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent) || ('ontouchstart' in window);
+        const sampleSize = isMobile ? 280 : 500;
+        sampleImage('/photos/couple.webp', sampleSize, PARTICLE_COUNT).then((result) => {
             const geom = geometryRef.current;
             if (!geom) return;
 

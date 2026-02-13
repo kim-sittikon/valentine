@@ -61,7 +61,7 @@ export async function sampleImage(url, sampleSize = 200, maxParticles = 80000) {
                     // Luminance (ITU-R BT.601)
                     const brightness = Math.max(0, Math.min(1, r * 0.299 + g * 0.587 + b * 0.114));
 
-                    if (brightness > 0.08) {
+                    if (brightness > 0.04) {
                         const wx = (x / sampleSize - 0.5) * spreadX;
                         const wy = -(y / sampleSize - 0.5) * spreadY;
                         const wz = (brightness - 0.5) * 12; // Z-depth for 3D pop
