@@ -1,47 +1,40 @@
 ---
-description: "Phase 6: Audio — Synthesized sounds, audio reactive visuals, heartbeat sync"
+description: "Phase 6: Audio — MP3 background music + audio-reactive visuals"
 ---
 
-# Phase 6: Audio & Emotional Layer
+# Phase 6: Audio & Emotional Layer ✅
 
-> scene "มีชีวิต" — เสียง + หัวใจเต้น
+> เพลงจริง + particles react ตาม frequency
 
 ## Tasks
 
-- [x] `audioManager.js` — synthesized sounds + AnalyserNode
-- [x] `useAudio.js` — audio lifecycle hook
-- [ ] Wire audio reactive → `uAudioBass` / `uAudioHigh` uniforms
-- [ ] Heartbeat sync → `uBeat` from bass envelope
-- [ ] Audio toggle working in browser
+- [x] `audioManager.js` — MP3 playback via `new Audio()` + AnalyserNode
+- [x] `audioState.js` — shared module (no circular deps)
+- [x] `useAudio.js` — init + play/pause toggle
+- [x] `App.jsx` — wire `useAudio()` + pass `initAudio` to Overlay
+- [x] `Overlay.jsx` — audio button calls `initAudio()` (browser gesture)
+- [x] `ParticleUniverse.jsx` — real audio data → shader uniforms
+- [x] `PostFX.jsx` — audio-driven bloom (chaos/gravity)
+- [x] `particleVertex.glsl` — `exp(-uBeat*5)` beat pulse
+- [x] Place `bgm.mp3` in `public/music/`
 
-## Audio Reactive (Section 21A)
+// turbo-all
 
-AnalyserNode แบ่ง 3 bands:
-- **Bass** (0–400Hz) → particle pulse outward
-- **Mid** (400–2kHz) → general energy
-- **High** (2kHz+) → sparkle + shimmer
+## How It Works
 
-Smooth values ใน useFrame เพื่อไม่ jitter:
-```js
-material.uniforms.uAudioBass.value += (audioData.bass - current) * 0.15;
+```
+Audio Graph:
+new Audio('bgm.mp3') → MediaElementSource → AnalyserNode → speakers
+
+Visual Coupling:
+FFT → fast/slow envelope → punch/beatPhase
+→ uAudioBass (particle expand)
+→ uAudioHigh (sparkle)
+→ uBeat (heart pulse)
+→ bloom boost (chaos)
 ```
 
-## Heartbeat Sync (Section 21B)
+## Setup
 
-Love scene → scale heart ตามเสียง heartbeat:
-- Bass envelope ≈ heartbeat rhythm
-- + subtle color warmth (`uHeartWarmth`)
-
-## Audio Layers per Scene
-
-| Scene | Sound |
-|---|---|
-| Birth | ambient drone (55Hz) |
-| Memory | sparkle (2–5kHz random) |
-| Chaos | wind whoosh (bandpass noise) |
-| Gravity | bass impact (40Hz) |
-| Love | heartbeat (50Hz double thud) |
-
-## Checkpoint
-
-audio on = particles pulse to bass + heart beats with sound
+1. Place MP3 in `public/music/bgm.mp3`
+2. Click 🔇 button → music plays + visuals react

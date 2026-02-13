@@ -1,8 +1,14 @@
 import React, { useEffect } from 'react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Canvas3D from './components/Canvas3D';
+import BackgroundVideo from './components/BackgroundVideo';
+import FloatingMemories from './components/FloatingMemories';
 import Overlay from './components/Overlay';
 import useScrollTimeline from './hooks/useScrollTimeline';
+import useAudio from './hooks/useAudio';
 import useUniverse from './store/useUniverse';
+import { SCENES } from './config/sceneConfig';
 
 // Error Boundary to catch R3F / shader crashes
 class ErrorBoundary extends React.Component {
@@ -41,12 +47,51 @@ class ErrorBoundary extends React.Component {
 
 export default function App() {
     useScrollTimeline();
+    const { initAudio } = useAudio();
 
-    // Debug toggle with backtick key
+    // ─── Keyboard controls: backtick=debug, 0=top, 1-6=scene jump ───
     useEffect(() => {
         const handleKey = (e) => {
+            // Backtick → toggle debug panel
             if (e.key === '`') {
                 useUniverse.getState().toggleDebug();
+                return;
+            }
+
+            // Key 0 → scroll to top
+            if (e.key === '0') {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                // Let GSAP catch up after scroll completes
+                requestAnimationFrame(() => ScrollTrigger.update());
+                console.log('[Galaxy] ⚡ Dev jump → top');
+                return;
+            }
+
+            // Keys 1-6 → jump to scene midpoint
+            const sceneIndex = parseInt(e.key, 10);
+            if (sceneIndex >= 1 && sceneIndex <= 6 && sceneIndex <= SCENES.length) {
+                const scene = SCENES[sceneIndex - 1];
+                const midpoint = (scene.range[0] + scene.range[1]) / 2;
+                const scrollContainer = document.getElementById('scroll-container');
+                if (!scrollContainer) return;
+
+                // Calculate target scroll position
+                const scrollHeight = scrollContainer.scrollHeight - window.innerHeight;
+                const targetY = midpoint * scrollHeight;
+
+                window.scrollTo({ top: targetY, behavior: 'smooth' });
+
+                // Sync ScrollTrigger after smooth scroll settles
+                // Use a small delay so the scroll animation can start
+                setTimeout(() => {
+                    ScrollTrigger.update();
+                }, 50);
+
+                console.log(
+                    `[Galaxy] ⚡ Dev jump → scene: ${scene.name}` +
+                    ` (scroll: ${(midpoint * 100).toFixed(1)}%)`
+                );
+                return;
             }
         };
         window.addEventListener('keydown', handleKey);
@@ -55,11 +100,17 @@ export default function App() {
 
     return (
         <ErrorBoundary>
+            {/* Cinematic background video (scroll 85-100%) */}
+            <BackgroundVideo />
+
             {/* Fixed 3D Canvas */}
             <Canvas3D />
 
+            {/* Floating photo memories (HTML overlay, scroll 18-40%) */}
+            <FloatingMemories />
+
             {/* HTML Overlay UI */}
-            <Overlay />
+            <Overlay initAudio={initAudio} />
 
             {/* Scroll container (drives timeline) */}
             <div id="scroll-container" />

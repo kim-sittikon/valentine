@@ -16,17 +16,13 @@ const useUniverse = create((set, get) => ({
     warpStretch: 0,
     heartBeat: 0,
 
-    // ─── Morph Phases (Section 21C) ───
-    morphPhase: 'image',
-    morphTargets: {
-        image: null,
-        heart: null,
-        qr: null,
-    },
+    // ─── Morph State ───
+    morphPhase: 0, // 0→1 = stars→photo, 1→2 = photo→heart
 
     // ─── Interaction ───
     mouseInteraction: false,
     mousePos: { x: 0, y: 0 },
+    mouseVel: { x: 0, y: 0 },
     shockwave: null,
 
     // ─── System ───
@@ -35,8 +31,6 @@ const useUniverse = create((set, get) => ({
     quality: 'high',
     fps: 60,
 
-    // ─── Color ───
-    colorPhase: 0,
 
     // ─── Actions ───
     setScrollProgress: (p) => {
@@ -52,7 +46,6 @@ const useUniverse = create((set, get) => ({
             sceneEnergy: scene.energy,
             sceneIndex: index,
             mouseInteraction: scene.name === 'chaos',
-            colorPhase: p * 5,
         });
     },
 
@@ -61,8 +54,8 @@ const useUniverse = create((set, get) => ({
     setWarpStretch: (v) => set({ warpStretch: v }),
     setHeartBeat: (v) => set({ heartBeat: v }),
     setMousePos: (pos) => set({ mousePos: pos }),
-    setMorphPhase: (phase) => set({ morphPhase: phase }),
-    setMorphTargets: (targets) => set({ morphTargets: targets }),
+    setMouseVel: (vel) => set({ mouseVel: vel }),
+    setMorphPhase: (v) => set({ morphPhase: v }),
 
     // Shockwave (Section 19B)
     triggerShockwave: (origin, strength = 1.0) => set({

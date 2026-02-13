@@ -32,53 +32,56 @@ description: "Phase 2: Narrative Engine — GSAP scroll timeline, camera rig, ov
 - [x] Install `leva` — installed (61 packages)
 - [x] `vite build` passes — 4.80s, no errors
 
-## Part B: Scroll & Transitions — ⬜ NOT STARTED
+## Part B: Scroll & Transitions — ✅ DONE
 
-- [ ] `useScrollTimeline.js` — add velocity tracking
-  - scroll velocity → `setScrollVelocity()` (setter exists, not called yet)
-  - one-shot scene transition triggers (`prevScene !== current`)
-  - GSAP built-in easings in timeline
-- [ ] `App.jsx` — dev kill switch (keys 1-6 → jump to scene)
+- [x] `useScrollTimeline.js` — velocity tracking
+  - normalized velocity: (progress - prev) / deltaTime + clamp ±2
+  - ref-based (no re-renders): `prevProgressRef`, `prevTimeRef`
+- [x] `useScrollTimeline.js` — one-shot scene transition triggers
+  - `prevSceneRef` = useRef (not store) → prevents double fire
+  - fires `handleSceneTransition()` with enriched log
+  - log format: `[Galaxy] 🎬 Scene: X → Y (event: ...) | local: ... | vel: ... | energy: ...`
+- [x] `useScrollTimeline.js` — GSAP config-driven easings
+  - morph ease from `sceneConfig.memory.easing`
+  - warp ease from `sceneConfig.gravity.easing`
+  - timeline start positions from `config.range[0]`
+- [x] `App.jsx` — dev kill switch (keys 1-6 → jump to scene)
+  - `ScrollTrigger.update()` after `scrollTo` (prevents GSAP desync)
+  - key 0 → reset to top
+  - console log: `[Galaxy] ⚡ Dev jump → scene: X (scroll: Y%)`
+- [x] `Overlay.jsx` — debug panel enhanced
+  - added: `scrollVelocity`, `localProgress`
+- [x] `vite build` passes — 437 modules, 5.59s, 0 errors
 
-## Part C: Camera & PostFX — ⬜ NOT STARTED
+## Part C: Camera & PostFX — ✅ DONE
 
-Files still have hardcoded values:
+- [x] `CameraRig.jsx` — config-driven camera
+  - reads `camera.z`, `camera.shake`, `camera.breathing`, `camera.orbitSpeed` from sceneConfig
+  - removed hardcoded `zMap` and `if (currentScene === 'chaos'/'love')` chains
+- [x] `PostFX.jsx` — config-driven post-processing
+  - reads `bloom`, `postfx.grain`, `postfx.ca`, `postfx.dof` from sceneConfig
+  - removed hardcoded `{ void: 0.2, birth: 0.3, ... }` bloom map
 
-- [ ] `CameraRig.jsx` — still uses `zMap = { void: 100, birth: 80, ... }`
-  - needs: import from config, breathing, clamp, velocity damping
-- [ ] `PostFX.jsx` — still uses `{ void: 0.2, birth: 0.3, ... }[currentScene]`
-  - needs: import bloom/grain/ca from config
+## Part D: UI & Energy — ✅ DONE
 
-## Part D: UI & Energy — ⬜ NOT STARTED
+- [x] `Overlay.jsx` — titles from `sceneConfig.title` via `getSceneByName()`
+  - removed hardcoded `SCENE_TITLES` map
+  - debug panel: added `scrollVelocity` + `localProgress`
+- [x] `ParticleUniverse.jsx` — `uEnergy` uniform from `sceneEnergy`
+  - smooth lerp: `uEnergy += (sceneEnergy - uEnergy) * 0.05`
+- [ ] `useAdaptiveQuality.js` — energy-aware perf budget (deferred to Phase 7)
+- [ ] Leva debug panel integration (deferred — debug panel in Overlay is sufficient)
 
-- [ ] `Overlay.jsx` — still uses `SCENE_TITLES = { void: '', ... }`
-  - needs: titles from config, leva debug panel (leva installed but not imported yet)
-- [ ] `ParticleUniverse.jsx` — still uses `currentScene === 'void'` checks
-  - needs: read `sceneEnergy` → pass as `uEnergy` uniform
-- [ ] `useAdaptiveQuality.js` — no energy-aware perf budget yet
+## Bugfixes
 
-## ⚠️ Remaining Hardcoded Values (to be migrated)
-
-| File | Hardcoded | Will become |
-|------|-----------|-------------|
-| `CameraRig.jsx:15` | `zMap = { void: 100, ... }` | `config.camera.z` |
-| `CameraRig.jsx:20` | `if (currentScene === 'chaos')` | `config.camera.shake` |
-| `CameraRig.jsx:29` | `if (currentScene === 'love')` | `config.camera.orbitSpeed` |
-| `PostFX.jsx:14-16` | `{ void: 0.2, ... }[currentScene]` | `config.bloom` |
-| `PostFX.jsx:20` | `currentScene === 'love'` | `config.postfx.dof` |
-| `PostFX.jsx:23-28` | `currentScene === 'gravity'` | `config.postfx.ca` |
-| `PostFX.jsx:50` | `opacity={0.04}` hardcoded | `config.postfx.grain` |
-| `Overlay.jsx:4-11` | `SCENE_TITLES = { ... }` | `config.title` |
-| `ParticleUniverse.jsx:124` | `currentScene === 'void'` | energy-based |
-| `ParticleUniverse.jsx:137` | `currentScene === 'love'` | energy/config |
+- [x] `index.css` — `pointer-events: none` on `.canvas-wrapper` → scroll works
 
 ## Checkpoint
 
-- [x] `vite build` passes
+- [x] `vite build` passes — 437 modules, 6.79s, 0 errors
 - [ ] scroll 0→100% = smooth scene transitions + titles ← needs browser verify
-- [ ] no flicker at scene boundaries (hysteresis 2%)
-- [ ] press 1-6 → jump to scene (dev kill switch)
-- [ ] camera breathes subtly + clamp prevents overshoot
-- [ ] leva panel shows real-time values
-- [ ] fast scroll → effects dampen
-- [ ] FPS > 55 throughout
+- [ ] no flicker at scene boundaries (hysteresis 1.5%)
+- [x] press 1-6 → jump to scene (dev kill switch) — console logs confirmed
+- [x] camera reads config values (z, breathing, shake, orbit)
+- [ ] FPS > 55 throughout ← needs browser verify
+

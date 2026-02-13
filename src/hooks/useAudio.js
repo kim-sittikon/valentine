@@ -1,51 +1,29 @@
-import { useEffect, useRef, useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 import { AudioManager } from '../utils/audioManager';
-import useUniverse from '../store/useUniverse';
+import { setAudioManagerRef } from '../store/audioState';
 
 const audioManager = new AudioManager();
 
 export default function useAudio() {
-    const prevScene = useRef('void');
     const isInit = useRef(false);
 
     const initAudio = useCallback(async () => {
-        if (isInit.current) return;
+        if (isInit.current) {
+            // Already initialized — just toggle play/pause
+            audioManager.toggle();
+            return;
+        }
+
         await audioManager.init();
         isInit.current = true;
-        audioManager.startDrone();
-    }, []);
 
-    useEffect(() => {
-        const unsub = useUniverse.subscribe(
-            (state) => state.currentScene,
-            (scene) => {
-                if (!isInit.current) return;
-                const prev = prevScene.current;
+        // Share ref with ParticleUniverse/PostFX for per-frame audio data
+        setAudioManagerRef(audioManager);
 
-                if (scene === 'memory' && prev !== 'memory') {
-                    audioManager.playSparkle();
-                }
-                if (scene === 'chaos' && prev !== 'chaos') {
-                    audioManager.playWhoosh();
-                }
-                if (scene === 'gravity' && prev !== 'gravity') {
-                    audioManager.playImpact();
-                }
-                if (scene === 'love' && prev !== 'love') {
-                    audioManager.startHeartbeat();
-                }
-                if (prev === 'love' && scene !== 'love') {
-                    audioManager.stopHeartbeat();
-                }
+        // Start playing
+        await audioManager.play();
 
-                prevScene.current = scene;
-            }
-        );
-
-        return () => {
-            unsub();
-            audioManager.dispose();
-        };
+        console.log('[Galaxy] 🎵 Audio initialized — playing BGM');
     }, []);
 
     return { audioManager, initAudio };

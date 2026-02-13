@@ -15,8 +15,13 @@ export const SCENES = [
         name: 'void',
         range: [0, 0.10],
         camera: { z: 100, breathing: 0.3, shake: 0, orbitSpeed: 0, minZ: 90, maxZ: 110 },
-        bloom: 0.2,
-        postfx: { dof: false, ca: 0, grain: 0.04 },
+        bloom: 0.08,
+        postfx: {
+            dof: false, ca: 0, grain: 0.02,
+            fogDensity: 0.0, fogColor: [0.02, 0.02, 0.08],           // no fog in void — clean stars
+            bloomThreshold: 0.6,
+            colorTint: [0.0, 0.0, 0.04],                           // slight blue
+        },
         energy: 0.2,
         emotion: 'calm',
         title: '',
@@ -27,11 +32,16 @@ export const SCENES = [
         name: 'birth',
         range: [0.10, 0.20],
         camera: { z: 60, breathing: 0.5, shake: 0, orbitSpeed: 0, minZ: 50, maxZ: 110 },
-        bloom: 0.3,
-        postfx: { dof: false, ca: 0, grain: 0.03 },
+        bloom: 0.12,
+        postfx: {
+            dof: false, ca: 0, grain: 0.02,
+            fogDensity: 0.014, fogColor: [0.04, 0.02, 0.09],       // navy-purple
+            bloomThreshold: 0.55,
+            colorTint: [0.01, 0.0, 0.03],                          // slight purple
+        },
         energy: 0.4,
         emotion: 'wonder',
-        title: '✦ เมื่อจักรวาลเริ่มต้น...',
+        title: 'ก่อนที่ดาวดวงจะส่องแสง\nเธอก็อยู่ในใจฉันแล้ว',
         easing: 'power3.inOut',
         event: 'particles_fadein',
     },
@@ -39,11 +49,16 @@ export const SCENES = [
         name: 'memory',
         range: [0.20, 0.45],
         camera: { z: 40, breathing: 0.4, shake: 0, orbitSpeed: 0.05, minZ: 30, maxZ: 70 },
-        bloom: 0.5,
-        postfx: { dof: false, ca: 0, grain: 0.03 },
+        bloom: 0.15,
+        postfx: {
+            dof: false, ca: 0, grain: 0.02,
+            fogDensity: 0.008, fogColor: [0.06, 0.03, 0.10],       // purple tint — บาง
+            bloomThreshold: 0.5,
+            colorTint: [0.03, 0.02, 0.0],                          // warm tint
+        },
         energy: 0.6,
         emotion: 'warm',
-        title: '💫 ทุกอนุภาค คือความทรงจำ',
+        title: 'ทุกวินาที ที่เรามีด้วยกัน\nคือจักรวาลที่สวยที่สุด',
         easing: 'power2.inOut',
         event: 'morph_to_image',
     },
@@ -51,11 +66,16 @@ export const SCENES = [
         name: 'chaos',
         range: [0.45, 0.55],
         camera: { z: 40, breathing: 0.2, shake: 0.8, orbitSpeed: 0, minZ: 30, maxZ: 50 },
-        bloom: 0.8,
-        postfx: { dof: false, ca: 0.005, grain: 0.06 },
+        bloom: 0.25,
+        postfx: {
+            dof: false, ca: 0.005, grain: 0.03,
+            fogDensity: 0.015, fogColor: [0.08, 0.02, 0.06],       // dark magenta
+            bloomThreshold: 0.7,
+            colorTint: [0.04, -0.01, 0.03],                        // magenta push
+        },
         energy: 1.0,
         emotion: 'intense',
-        title: '🌪 แตกสลาย... เพื่อสร้างใหม่',
+        title: 'ถึงจะห่างไกลแค่ไหน\nใจฉันก็ยังเลือกเธอ',
         easing: 'power4.in',
         event: 'mouse_interaction',
     },
@@ -63,11 +83,16 @@ export const SCENES = [
         name: 'gravity',
         range: [0.55, 0.75],
         camera: { z: 5, breathing: 0.15, shake: 0.1, orbitSpeed: 0, minZ: 3, maxZ: 45 },
-        bloom: 1.5,
-        postfx: { dof: false, ca: 0.01, grain: 0.05 },
+        bloom: 0.3,
+        postfx: {
+            dof: false, ca: 0.01, grain: 0.02,
+            fogDensity: 0.012, fogColor: [0.03, 0.02, 0.07],       // deep void
+            bloomThreshold: 0.75,
+            colorTint: [0.0, 0.0, 0.0],                            // neutral
+        },
         energy: 0.3,
         emotion: 'suspense',
-        title: '🚀 แรงดึงดูดที่ไม่อาจหยุด',
+        title: 'ไม่ว่าจะนานแค่ไหน\nฉันจะอยู่ตรงนี้ กับเธอ',
         easing: 'power3.in',
         event: 'warp_stretch',
     },
@@ -75,11 +100,16 @@ export const SCENES = [
         name: 'love',
         range: [0.75, 1.0],
         camera: { z: 30, breathing: 0.6, shake: 0, orbitSpeed: 0.15, minZ: 20, maxZ: 40 },
-        bloom: 0.8,
-        postfx: { dof: true, ca: 0, grain: 0.02 },
+        bloom: 0.2,
+        postfx: {
+            dof: true, ca: 0, grain: 0.02,
+            fogDensity: 0.006, fogColor: [0.08, 0.04, 0.08],       // soft pink — บางสุด
+            bloomThreshold: 0.8,
+            colorTint: [0.04, 0.01, 0.03],                         // pink highlight
+        },
         energy: 0.5,
         emotion: 'intimate',
-        title: '💖 Galaxy of You',
+        title: 'Happy Valentine\'s Day\nรักนะ ที่สุดในจักรวาล 💖',
         easing: 'power2.out',
         event: 'heart_morph',
     },
@@ -160,5 +190,13 @@ export function lerpSceneValues(from, to, t) {
         breathing: lerp(from.camera.breathing, to.camera.breathing, t),
         shake: lerp(from.camera.shake, to.camera.shake, t),
         ca: lerp(from.postfx.ca, to.postfx.ca, t),
+        fogDensity: lerp(from.postfx.fogDensity, to.postfx.fogDensity, t),
+        fogColorR: lerp(from.postfx.fogColor[0], to.postfx.fogColor[0], t),
+        fogColorG: lerp(from.postfx.fogColor[1], to.postfx.fogColor[1], t),
+        fogColorB: lerp(from.postfx.fogColor[2], to.postfx.fogColor[2], t),
+        bloomThreshold: lerp(from.postfx.bloomThreshold, to.postfx.bloomThreshold, t),
+        colorTintR: lerp(from.postfx.colorTint[0], to.postfx.colorTint[0], t),
+        colorTintG: lerp(from.postfx.colorTint[1], to.postfx.colorTint[1], t),
+        colorTintB: lerp(from.postfx.colorTint[2], to.postfx.colorTint[2], t),
     };
 }
